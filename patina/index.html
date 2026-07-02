@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Patina — Shoot like it's film. Develop like it matters.</title>
+<meta name="description" content="Patina is a premium retro film-photo studio for iPhone: 50 hand-graded film looks, real Film Rolls you develop in batch, Memory Capsules, a Memory Book, Patina AI, and live retro video effects." />
+<meta property="og:title" content="Patina — Film, the long way round." />
+<meta property="og:description" content="50 hand-graded film looks. Load a roll, shoot blind, develop the batch. Seal a moment for five years. The darkroom, in your pocket." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0a09; --bg-2:#121010; --card:#16130f; --line:#2a2521;
+    --bone:#f4efe7; --bone-dim:#b6ad9f; --bone-faint:#7d756a;
+    --copper:#c9763b; --copper-deep:#b45a2a; --gold:#e8c07a;
+    --cyan:#78f7ff;
+    --serif:"Fraunces",Georgia,serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+    --maxw:1120px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg); color:var(--bone);
+    font-family:var(--serif); -webkit-font-smoothing:antialiased;
+    overflow-x:hidden; line-height:1.5;
+  }
+  /* film grain over everything */
+  body::after{
+    content:""; position:fixed; inset:0; z-index:9; pointer-events:none; opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 28px}
+  .mono{font-family:var(--mono); text-transform:uppercase; letter-spacing:.22em; font-size:11px}
+  .eyebrow{color:var(--copper); font-family:var(--mono); text-transform:uppercase; letter-spacing:.28em; font-size:12px}
+  a{color:inherit}
+
+  /* ---- nav ---- */
+  nav{position:sticky; top:0; z-index:20; backdrop-filter:blur(14px);
+      background:rgba(11,10,9,.66); border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex; align-items:center; justify-content:space-between; height:64px}
+  .brand{display:flex; align-items:center; gap:11px; font-weight:600; font-size:19px; letter-spacing:.01em}
+  .links{display:flex; gap:30px; font-family:var(--mono); font-size:12px; text-transform:uppercase; letter-spacing:.16em; color:var(--bone-dim)}
+  .links a{text-decoration:none; transition:color .2s}
+  .links a:hover{color:var(--bone)}
+  @media(max-width:680px){.links{display:none}}
+
+  /* aperture mark */
+  .aperture{width:30px;height:30px;border-radius:50%;position:relative;flex:none;
+    background:radial-gradient(circle at 50% 50%,#1c1814,#0b0a09);
+    border:1.5px solid var(--copper); box-shadow:0 0 14px rgba(201,118,59,.35)}
+  .aperture::before{content:"";position:absolute;inset:6px;border-radius:50%;
+    border:1.5px solid var(--gold);opacity:.7}
+  .aperture.big{width:84px;height:84px;border-width:2px}
+  .aperture.big::before{inset:16px;border-width:2px}
+  .aperture.big::after{content:"";position:absolute;inset:34px;border-radius:50%;background:var(--copper);
+    box-shadow:0 0 18px rgba(201,118,59,.7)}
+
+  /* ---- hero ---- */
+  header.hero{position:relative; padding:96px 0 60px; text-align:center; overflow:hidden}
+  header.hero::before{content:"";position:absolute;left:50%;top:-10%;width:760px;height:760px;
+    transform:translateX(-50%);border-radius:50%;z-index:0;
+    background:radial-gradient(circle,rgba(201,118,59,.16),transparent 62%)}
+  .hero .wrap{position:relative;z-index:1}
+  .hero h1{font-size:clamp(42px,8vw,86px); font-weight:600; line-height:1.02; letter-spacing:-.02em; margin:26px auto 0; max-width:13ch}
+  .hero h1 em{font-style:italic; color:var(--gold)}
+  .hero p.sub{font-size:clamp(16px,2.4vw,21px); color:var(--bone-dim); max-width:54ch; margin:22px auto 0}
+  .cta-row{display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:34px}
+  .btn{font-family:var(--mono); text-transform:uppercase; letter-spacing:.16em; font-size:12px; font-weight:600;
+    padding:15px 26px; border-radius:999px; text-decoration:none; transition:transform .18s ease, box-shadow .18s ease; display:inline-flex; align-items:center; gap:10px}
+  .btn.primary{background:linear-gradient(180deg,#d9853f,#b45a2a); color:#fff; box-shadow:0 10px 30px rgba(180,90,42,.4)}
+  .btn.primary:hover{transform:translateY(-2px); box-shadow:0 16px 40px rgba(180,90,42,.5)}
+  .btn.ghost{border:1px solid var(--line); color:var(--bone-dim)}
+  .btn.ghost:hover{color:var(--bone); border-color:var(--copper)}
+  .badge-note{margin-top:18px; color:var(--bone-faint); font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase}
+
+  /* device frame */
+  .device-stage{margin:54px auto 0; max-width:880px; position:relative; z-index:1}
+  .filmstrip{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; padding:18px;
+    border:1px solid var(--line); border-radius:18px; background:linear-gradient(180deg,#16130f,#0e0c0a)}
+  .frame{width:120px;height:150px;border-radius:8px;position:relative;overflow:hidden;flex:none;
+    border:1px solid rgba(255,255,255,.07); box-shadow:inset 0 0 30px rgba(0,0,0,.5)}
+  .frame span{position:absolute;left:0;right:0;bottom:0;font-family:var(--mono);font-size:9px;
+    letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85);padding:6px 8px;
+    background:linear-gradient(0deg,rgba(0,0,0,.7),transparent)}
+  .f1{background:linear-gradient(150deg,#caa06a,#7a5230,#2a1c12)}
+  .f2{background:linear-gradient(150deg,#3a5d6e,#16323f,#070d12)}
+  .f3{background:linear-gradient(150deg,#d98a60,#9a5a40,#2a1714)}
+  .f4{background:linear-gradient(150deg,#9aa0a6,#5a6068,#16181c)}
+  .f5{background:linear-gradient(150deg,#e0c0a0,#b08a60,#3a2a1a)}
+  .f6{background:linear-gradient(150deg,#c97a8a,#6a3550,#1a0d14)}
+  @media(max-width:680px){.frame{width:88px;height:110px}}
+
+  /* phone mockups (real screenshots) */
+  .device{position:relative;border-radius:30px;background:#000;border:6px solid #17130f;
+    box-shadow:0 26px 60px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.05)}
+  .device img{display:block;width:100%;border-radius:24px}
+  .heroshots{display:flex;justify-content:center;align-items:flex-end;margin-top:6px}
+  .heroshots .device{width:30%;max-width:236px}
+  .heroshots .device:nth-child(1){transform:rotate(-5deg) translateY(16px)}
+  .heroshots .device:nth-child(2){transform:translateY(-12px) scale(1.07);z-index:3;margin:0 -16px;
+    box-shadow:0 36px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(201,118,59,.18)}
+  .heroshots .device:nth-child(3){transform:rotate(5deg) translateY(16px)}
+  @media(max-width:680px){
+    .heroshots .device:nth-child(1),.heroshots .device:nth-child(3){display:none}
+    .heroshots .device:nth-child(2){width:64%;max-width:280px;transform:none;margin:0}
+  }
+  .shots{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:48px;align-items:start}
+  .shots figure{transition:transform .3s cubic-bezier(.2,.7,.2,1)}
+  .shots figure:hover{transform:translateY(-8px)}
+  .shots figcaption{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--bone-dim);text-align:center;margin-top:14px}
+  @media(max-width:880px){.shots{grid-template-columns:repeat(2,1fr);gap:18px}}
+
+  /* ---- stat band ---- */
+  .stats{border-top:1px solid var(--line); border-bottom:1px solid var(--line); margin-top:80px; background:var(--bg-2)}
+  .stats .wrap{display:grid; grid-template-columns:repeat(4,1fr); gap:24px; padding:34px 28px; text-align:center}
+  .stat .n{font-size:clamp(30px,5vw,46px); font-weight:600; color:var(--gold); letter-spacing:-.02em}
+  .stat .l{font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.18em; color:var(--bone-dim); margin-top:6px}
+  @media(max-width:680px){.stats .wrap{grid-template-columns:repeat(2,1fr); gap:28px}}
+
+  /* ---- sections ---- */
+  section{padding:92px 0}
+  .sec-head{max-width:64ch}
+  .sec-head h2{font-size:clamp(30px,5vw,52px); font-weight:600; letter-spacing:-.02em; line-height:1.05; margin-top:14px}
+  .sec-head p{color:var(--bone-dim); font-size:18px; margin-top:16px; max-width:52ch}
+
+  /* bento */
+  .bento{display:grid; grid-template-columns:repeat(6,1fr); gap:18px; margin-top:46px}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:20px; padding:30px;
+    position:relative; overflow:hidden; transition:transform .25s ease, border-color .25s ease}
+  .card:hover{transform:translateY(-4px); border-color:rgba(201,118,59,.4)}
+  .card .ico{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+    background:rgba(201,118,59,.12); color:var(--copper); font-size:20px; margin-bottom:18px}
+  .card h3{font-size:23px; font-weight:600; letter-spacing:-.01em}
+  .card p{color:var(--bone-dim); margin-top:9px; font-size:15.5px}
+  .card.wide{grid-column:span 4} .card.half{grid-column:span 3} .card.third{grid-column:span 2}
+  @media(max-width:880px){.card.wide,.card.half,.card.third{grid-column:span 6}}
+  .card.feature{background:linear-gradient(150deg,#1b1610,#0e0c0a); min-height:240px; display:flex; flex-direction:column; justify-content:flex-end}
+  .card.feature .tag{position:absolute; top:24px; left:30px}
+  .glowline{position:absolute; inset:0; opacity:.5; pointer-events:none;
+    background:radial-gradient(600px 200px at 80% 0%, rgba(201,118,59,.14), transparent)}
+
+  /* themes strip */
+  .themes{display:flex; gap:14px; margin-top:40px; flex-wrap:wrap}
+  .swatch{flex:1; min-width:150px; border-radius:16px; border:1px solid var(--line); padding:22px; font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase}
+  .sw1{background:#f4efe7; color:#221c15} .sw2{background:#0c0c0e; color:#f8fbff}
+  .sw3{background:#0b1830; color:#9ccbff} .sw4{background:#06101f; color:#f3c53b}
+  .sw5{background:linear-gradient(135deg,#1a120c,#2a1c12); color:#e8c07a}
+
+  /* CTA */
+  .final{text-align:center; padding:110px 0}
+  .final h2{font-size:clamp(34px,6vw,64px); font-weight:600; letter-spacing:-.02em; line-height:1.04; max-width:18ch; margin:18px auto 0}
+  .final h2 em{font-style:italic; color:var(--gold)}
+
+  footer{border-top:1px solid var(--line); padding:40px 0; color:var(--bone-faint); font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase}
+  footer .wrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px}
+
+  /* reveal */
+  .reveal{opacity:0; transform:translateY(26px); filter:blur(6px); transition:all .8s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1; transform:none; filter:none}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <div class="brand"><span class="aperture"></span> Patina</div>
+  <div class="links">
+    <a href="#looks">Looks</a><a href="#rolls">Film Rolls</a>
+    <a href="#memory">Memory</a><a href="#ai">AI</a><a href="#get">Get it</a>
+  </div>
+</div></nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div style="display:flex;justify-content:center"><span class="aperture big"></span></div>
+    <div class="eyebrow" style="margin-top:24px">The darkroom, in your pocket</div>
+    <h1>Shoot like it's film. <em>Develop</em> like it matters.</h1>
+    <p class="sub">Patina is a premium retro film studio for iPhone — 50 hand-graded looks with real chemistry, film rolls you shoot blind and develop in batch, and rituals worth slowing down for.</p>
+    <div class="cta-row">
+      <a class="btn primary" href="https://apps.apple.com/app/id6770208714">Download on the App Store ↗</a>
+      <a class="btn ghost" href="#looks">See the looks</a>
+    </div>
+    <div class="badge-note">iPhone · iOS 17+</div>
+
+    <div class="device-stage reveal">
+      <div class="heroshots">
+        <div class="device"><img src="AppStoreScreenshots/web/03.jpg" alt="Patina camera with a film roll loaded" loading="lazy"></div>
+        <div class="device"><img src="AppStoreScreenshots/web/01.jpg" alt="Patina editor with live film look" loading="lazy"></div>
+        <div class="device"><img src="AppStoreScreenshots/web/04.jpg" alt="Patina album with film rolls" loading="lazy"></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="stats"><div class="wrap">
+  <div class="stat"><div class="n">50</div><div class="l">Film looks</div></div>
+  <div class="stat"><div class="n">5</div><div class="l">Themes</div></div>
+  <div class="stat"><div class="n">∞</div><div class="l">Film rolls</div></div>
+  <div class="stat"><div class="n">5 yr</div><div class="l">Memory capsules</div></div>
+</div></div>
+
+<section id="screens"><div class="wrap reveal">
+  <div class="sec-head" style="margin:0 auto;text-align:center">
+    <div class="eyebrow">Every screen, considered</div>
+    <h2>A whole darkroom, not a filter list.</h2>
+  </div>
+  <div class="shots">
+    <figure><div class="device"><img src="AppStoreScreenshots/web/02.jpg" alt="The all-filters catalog" loading="lazy"></div><figcaption>50 film looks</figcaption></figure>
+    <figure><div class="device"><img src="AppStoreScreenshots/web/05.jpg" alt="Memory Book journal page" loading="lazy"></div><figcaption>Memory Book</figcaption></figure>
+    <figure><div class="device"><img src="AppStoreScreenshots/web/06.jpg" alt="Memory Capsules sealed" loading="lazy"></div><figcaption>Memory Capsules</figcaption></figure>
+    <figure><div class="device"><img src="AppStoreScreenshots/web/07.jpg" alt="Patina AI Colorist" loading="lazy"></div><figcaption>Patina AI</figcaption></figure>
+  </div>
+</div></section>
+
+<section id="looks"><div class="wrap reveal">
+  <div class="sec-head">
+    <div class="eyebrow">Real chemistry, not a slider</div>
+    <h2>Fifty looks, hand-graded layer by layer.</h2>
+    <p>Every look is built like a film stock — an ASC-CDL grade, an S-curve, split-toning, then grain, halation, light leaks and vignette tuned per stock. From clean editorial to blown-out VHS, nothing screams "filter."</p>
+  </div>
+  <div class="bento">
+    <div class="card feature wide"><div class="glowline"></div><div class="tag eyebrow">Signature</div>
+      <h3>Copper Electric · Copper Noir · Aerochrome</h3><p>Distinct, committed grades — the kind you keep coming back to.</p></div>
+    <div class="card third"><div class="ico">◐</div><h3>Live preview</h3><p>What you see is what you shoot — full pipeline on the viewfinder.</p></div>
+    <div class="card third"><div class="ico">⌗</div><h3>Tune every layer</h3><p>Intensity, grain, halation, vignette — dial each one in.</p></div>
+    <div class="card half"><div class="ico">▦</div><h3>Honest grain</h3><p>Soft-light film grain that breathes, not a noise overlay slapped on top.</p></div>
+    <div class="card half"><div class="ico">✦</div><h3>Halation & leaks</h3><p>Highlight bloom and warm leaks baked into the look, on by default where it belongs.</p></div>
+  </div>
+</div></section>
+
+<section id="rolls" style="background:var(--bg-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><div class="wrap reveal">
+  <div class="sec-head">
+    <div class="eyebrow">The patient feature</div>
+    <h2>Load a roll. Shoot blind. Develop the batch.</h2>
+    <p>One stock, a fixed number of exposures, no preview and no retakes. Your prints stay latent until you use the last frame — or leave them overnight in the darkroom. Then the whole roll develops at once, in a ceremony worth watching.</p>
+  </div>
+  <div class="bento">
+    <div class="card third"><div class="ico">▣</div><h3>35mm counter</h3><p>A real advancing film strip — frames fill as you shoot.</p></div>
+    <div class="card third"><div class="ico">⏳</div><h3>Latent until developed</h3><p>The anticipation is the point. No chimping.</p></div>
+    <div class="card third"><div class="ico">✺</div><h3>Develop ceremony</h3><p>Prints spill onto the table and develop before your eyes.</p></div>
+    <div class="card half"><div class="ico">▶</div><h3>Live retro video</h3><p>VHS colour and CRT scanlines — shown <em>live</em> on the viewfinder, and baked into the recording.</p></div>
+    <div class="card half"><div class="ico">◳</div><h3>Polaroid develops</h3><p>Shake-to-develop a polaroid; it even prints in your Dynamic Island.</p></div>
+  </div>
+</div></section>
+
+<section id="memory"><div class="wrap reveal">
+  <div class="sec-head">
+    <div class="eyebrow">Make it matter</div>
+    <h2>A place for the photos worth keeping.</h2>
+    <p>Patina isn't a camera roll — it's a keepsake. Seal a moment in a capsule, bind your shots into a book, and find them again on a map of where they happened.</p>
+  </div>
+  <div class="bento">
+    <div class="card wide feature"><div class="glowline"></div><div class="tag eyebrow">Memory Capsules</div>
+      <h3>Seal a photo for up to five years.</h3><p>Wax-stamped shut and locked on-device. Patina reminds you when it's ready to open.</p></div>
+    <div class="card third"><div class="ico">▥</div><h3>Memory Book</h3><p>A page-flipping scrapbook of your favourite frames.</p></div>
+    <div class="card third"><div class="ico">⌖</div><h3>Memories Map</h3><p>Your polaroids pinned to the places they were taken.</p></div>
+    <div class="card third"><div class="ico">⊘</div><h3>Burn to delete</h3><p>Even deletion is a ritual — photos catch, char, and rise away.</p></div>
+  </div>
+</div></section>
+
+<section id="ai" style="background:var(--bg-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><div class="wrap reveal">
+  <div class="sec-head">
+    <div class="eyebrow">Patina AI · Premium</div>
+    <h2>Describe a mood. Get a recipe you can keep.</h2>
+    <p>Type "faded summer, soft halation" and Patina builds an editable film recipe — then auto-fixes, refines, or matches the grade of any photo you love. It writes the captions for your Memory Book and seals your capsules, too.</p>
+  </div>
+  <div class="bento">
+    <div class="card third"><div class="ico">✶</div><h3>Recipes</h3><p>Prompt → an editable, reusable look.</p></div>
+    <div class="card third"><div class="ico">⊹</div><h3>Auto-fix & Refine</h3><p>One tap to balance, then nudge it your way.</p></div>
+    <div class="card third"><div class="ico">⊡</div><h3>Match a photo</h3><p>Steal the grade from any reference shot.</p></div>
+  </div>
+  <div class="themes">
+    <div class="swatch sw1">Refined · Light</div>
+    <div class="swatch sw2">Refined · OLED</div>
+    <div class="swatch sw3">Midnight Blue</div>
+    <div class="swatch sw4">Midnight Yellow</div>
+    <div class="swatch sw5">Editorial</div>
+  </div>
+</div></section>
+
+<section class="final" id="get"><div class="wrap reveal">
+  <div style="display:flex;justify-content:center"><span class="aperture big"></span></div>
+  <div class="eyebrow" style="margin-top:22px">Coming to the App Store</div>
+  <h2>Slow down. <em>Shoot something</em> worth developing.</h2>
+  <div class="cta-row" style="margin-top:30px">
+    <a class="btn primary" href="https://apps.apple.com/app/id6770208714">Download on the App Store ↗</a>
+    <a class="btn ghost" href="release-dashboard.html">Release status →</a>
+  </div>
+  <div class="badge-note">iPhone · iOS 17+ · Patina Pro subscription unlocks every look &amp; AI</div>
+</div></section>
+
+<footer><div class="wrap">
+  <div>© Studio 84 · Patina</div>
+  <div><a href="https://trendo84.github.io/privacy-policies/patina/">Privacy</a> · <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">Terms</a> · <a href="https://trendo84.github.io/privacy-policies/patina/support.html">Support</a></div>
+</div></footer>
+
+<script>
+  const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
