@@ -7,6 +7,12 @@
 <meta name="description" content="Patina is a premium retro film-photo studio for iPhone: 50 hand-graded film looks, real Film Rolls you develop in batch, Memory Capsules, a Memory Book, Patina AI, and live retro video effects." />
 <meta property="og:title" content="Patina — Film, the long way round." />
 <meta property="og:description" content="50 hand-graded film looks. Load a roll, shoot blind, develop the batch. Seal a moment for five years. The darkroom, in your pocket." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://trendo84.github.io/patina/" />
+<meta property="og:image" content="https://trendo84.github.io/patina/AppStoreScreenshots/web/editor.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="theme-color" content="#0b0a09" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='%230b0a09' stroke='%23c9763b' stroke-width='4'/%3E%3Ccircle cx='32' cy='32' r='14' fill='none' stroke='%23e8c07a' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='5' fill='%23c9763b'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -45,6 +51,29 @@
   .links a{text-decoration:none; transition:color .2s}
   .links a:hover{color:var(--bone)}
   @media(max-width:680px){.links{display:none}}
+  .nav-cta{padding:9px 18px!important; font-size:10.5px!important}
+
+  /* film-look ticker */
+  .ticker{overflow:hidden; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+    background:var(--bg-2); padding:15px 0; white-space:nowrap}
+  .ticker-track{display:inline-flex; gap:38px; font-family:var(--mono); font-size:11px;
+    letter-spacing:.26em; text-transform:uppercase; color:var(--bone-faint);
+    animation:tick 46s linear infinite; will-change:transform}
+  .ticker-track span{flex:none}
+  .ticker-track em{font-style:normal; color:var(--copper)}
+  @keyframes tick{to{transform:translateX(-50%)}}
+  @media (prefers-reduced-motion: reduce){.ticker-track{animation:none}}
+
+  /* themes duo */
+  .theme-duo{display:flex; gap:30px; justify-content:center; align-items:flex-start; margin-top:46px}
+  .theme-duo .device{width:34%; max-width:264px; transition:transform .3s cubic-bezier(.2,.7,.2,1)}
+  .theme-duo .device:first-child{transform:rotate(-2deg) translateY(10px)}
+  .theme-duo .device:last-child{transform:rotate(2deg)}
+  .theme-duo .device:hover{transform:translateY(-6px)}
+  @media(max-width:680px){
+    .theme-duo{gap:16px}
+    .theme-duo .device{width:46%}
+  }
 
   /* aperture mark */
   .aperture{width:30px;height:30px;border-radius:50%;position:relative;flex:none;
@@ -168,8 +197,9 @@
   <div class="brand"><span class="aperture"></span> Patina</div>
   <div class="links">
     <a href="#looks">Looks</a><a href="#rolls">Film Rolls</a>
-    <a href="#memory">Memory</a><a href="#ai">AI</a><a href="#get">Get it</a>
+    <a href="#memory">Memory</a><a href="#themes">Themes</a><a href="#ai">AI</a>
   </div>
+  <a class="btn primary nav-cta" href="https://apps.apple.com/app/id6770208714">Get Patina ↗</a>
 </div></nav>
 
 <header class="hero">
@@ -186,13 +216,18 @@
 
     <div class="device-stage reveal">
       <div class="heroshots">
-        <div class="device"><img src="AppStoreScreenshots/web/03.jpg" alt="Patina camera with a film roll loaded" loading="lazy"></div>
-        <div class="device"><img src="AppStoreScreenshots/web/01.jpg" alt="Patina editor with live film look" loading="lazy"></div>
-        <div class="device"><img src="AppStoreScreenshots/web/04.jpg" alt="Patina album with film rolls" loading="lazy"></div>
+        <div class="device"><img src="AppStoreScreenshots/web/editor-light.jpg" alt="Patina editor in the Refined Light theme" loading="lazy"></div>
+        <div class="device"><img src="AppStoreScreenshots/web/editor.jpg" alt="Patina editor with a live film look" loading="lazy"></div>
+        <div class="device"><img src="AppStoreScreenshots/web/album.jpg" alt="Patina album of polaroid memories" loading="lazy"></div>
       </div>
     </div>
   </div>
 </header>
+
+<div class="ticker" aria-hidden="true"><div class="ticker-track">
+  <span>Copper Electric</span><span><em>·</em></span><span>Patina '74</span><span><em>·</em></span><span>Clean Retro</span><span><em>·</em></span><span>Polacolor</span><span><em>·</em></span><span>Portra 400</span><span><em>·</em></span><span>Copper Noir</span><span><em>·</em></span><span>Aerochrome</span><span><em>·</em></span><span>Tape Worn</span><span><em>·</em></span><span>Mono</span><span><em>·</em></span><span>+ 41 more looks</span><span><em>·</em></span>
+  <span>Copper Electric</span><span><em>·</em></span><span>Patina '74</span><span><em>·</em></span><span>Clean Retro</span><span><em>·</em></span><span>Polacolor</span><span><em>·</em></span><span>Portra 400</span><span><em>·</em></span><span>Copper Noir</span><span><em>·</em></span><span>Aerochrome</span><span><em>·</em></span><span>Tape Worn</span><span><em>·</em></span><span>Mono</span><span><em>·</em></span><span>+ 41 more looks</span><span><em>·</em></span>
+</div></div>
 
 <div class="stats"><div class="wrap">
   <div class="stat"><div class="n">50</div><div class="l">Film looks</div></div>
@@ -207,10 +242,10 @@
     <h2>A whole darkroom, not a filter list.</h2>
   </div>
   <div class="shots">
-    <figure><div class="device"><img src="AppStoreScreenshots/web/02.jpg" alt="The all-filters catalog" loading="lazy"></div><figcaption>50 film looks</figcaption></figure>
-    <figure><div class="device"><img src="AppStoreScreenshots/web/05.jpg" alt="Memory Book journal page" loading="lazy"></div><figcaption>Memory Book</figcaption></figure>
-    <figure><div class="device"><img src="AppStoreScreenshots/web/06.jpg" alt="Memory Capsules sealed" loading="lazy"></div><figcaption>Memory Capsules</figcaption></figure>
-    <figure><div class="device"><img src="AppStoreScreenshots/web/07.jpg" alt="Patina AI Colorist" loading="lazy"></div><figcaption>Patina AI</figcaption></figure>
+    <figure><div class="device"><img src="AppStoreScreenshots/web/looks.jpg" alt="The all-filters catalog" loading="lazy"></div><figcaption>50 film looks</figcaption></figure>
+    <figure><div class="device"><img src="AppStoreScreenshots/web/book.jpg" alt="Memory Book journal page" loading="lazy"></div><figcaption>Memory Book</figcaption></figure>
+    <figure><div class="device"><img src="AppStoreScreenshots/web/capsules.jpg" alt="Memory Capsules sealed" loading="lazy"></div><figcaption>Memory Capsules</figcaption></figure>
+    <figure><div class="device"><img src="AppStoreScreenshots/web/ai.jpg" alt="Patina AI Colorist" loading="lazy"></div><figcaption>Patina AI</figcaption></figure>
   </div>
 </div></section>
 
@@ -271,6 +306,18 @@
     <div class="card third"><div class="ico">⊹</div><h3>Auto-fix & Refine</h3><p>One tap to balance, then nudge it your way.</p></div>
     <div class="card third"><div class="ico">⊡</div><h3>Match a photo</h3><p>Steal the grade from any reference shot.</p></div>
   </div>
+</div></section>
+
+<section id="themes"><div class="wrap reveal">
+  <div class="sec-head" style="margin:0 auto;text-align:center">
+    <div class="eyebrow">One identity, five moods</div>
+    <h2>Themes that re-skin the whole darkroom.</h2>
+    <p style="margin-left:auto;margin-right:auto">From warm bone to OLED midnight — and a Pantone-yellow signage mode that turns the app into a different camera entirely.</p>
+  </div>
+  <div class="theme-duo">
+    <div class="device"><img src="AppStoreScreenshots/web/editor-yellow.jpg" alt="Patina editor in the Midnight Yellow theme" loading="lazy"></div>
+    <div class="device"><img src="AppStoreScreenshots/web/album-yellow.jpg" alt="Patina album in the Midnight Yellow theme" loading="lazy"></div>
+  </div>
   <div class="themes">
     <div class="swatch sw1">Refined · Light</div>
     <div class="swatch sw2">Refined · OLED</div>
@@ -286,7 +333,7 @@
   <h2>Slow down. <em>Shoot something</em> worth developing.</h2>
   <div class="cta-row" style="margin-top:30px">
     <a class="btn primary" href="https://apps.apple.com/app/id6770208714">Download on the App Store ↗</a>
-    <a class="btn ghost" href="release-dashboard.html">Release status →</a>
+    <a class="btn ghost" href="#looks">See the looks ↑</a>
   </div>
   <div class="badge-note">iPhone · iOS 17+ · Patina Pro subscription unlocks every look &amp; AI</div>
 </div></section>
