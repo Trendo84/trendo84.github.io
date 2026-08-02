@@ -35,7 +35,10 @@ if (command === "compare") {
 
   if (review.length) {
     console.log(`\n${review.length} listing(s) held for review:`);
-    for (const r of review) console.log(`  ${r.why}  ${r.listing.merchantId}/${r.listing.sku}`);
+    for (const r of review) {
+      const impact = r.priceImpactCents ? `  ${money(r.priceImpactCents)} at stake` : "";
+      console.log(`  ${r.reason.padEnd(22)} ${r.merchantId}/${r.sku}${impact}`);
+    }
   }
   for (const f of failures) {
     console.log(`\n! ${f.merchantId} unavailable — excluded from comparison, not treated as expensive`);

@@ -84,7 +84,7 @@ test("two SKUs from one merchant: keeps the better, sends the other to review", 
   const sydney = group.members.filter(m => m.listing.merchantId === "sydney-tools");
   assert.equal(sydney.length, 1, "one row per merchant in a comparison");
 
-  const dupe = review.find(r => r.why === "duplicate-merchant-sku");
+  const dupe = review.find(r => r.reason === "duplicate-merchant-sku");
   assert.ok(dupe, "the loser is queued, not silently dropped");
 });
 

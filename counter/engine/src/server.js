@@ -52,7 +52,7 @@ const server = createServer(async (req, res) => {
       const discounts = parseDiscounts(url.searchParams.get("discounts"));
 
       const { listings, failures } = await fetchAll(query);
-      const { products, review } = groupListings(listings);
+      const { products, review } = groupListings(listings, { overrides: store.overrides() });
 
       const comparisons = products
         .map(toComparison)

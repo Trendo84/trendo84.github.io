@@ -47,6 +47,41 @@ export function openStore(path = ":memory:") {
       created_at  TEXT NOT NULL,
       PRIMARY KEY (email, product_id)
     );
+
+    -- Human decisions about matching. Keyed on (merchant_id, sku) because
+    -- that is the only thing stable across re-derivation: groupListings()
+    -- rebuilds product ids from the listings on every run.
+    --
+    -- Both polarities are required. Without 'split', a reviewer rejecting a
+    -- bad match watches it reappear identically after tomorrow's ingest.
+    CREATE TABLE IF NOT EXISTS match_overrides (
+      merchant_id TEXT NOT NULL,
+      sku         TEXT NOT NULL,
+      product_id  TEXT NOT NULL,
+      polarity    TEXT NOT NULL CHECK (polarity IN ('merge', 'split')),
+      note        TEXT,
+      created_at  TEXT NOT NULL,
+      PRIMARY KEY (merchant_id, sku, product_id, polarity)
+    );
+
+    -- One row per listing needing a decision, never one per candidate pair.
+    CREATE TABLE IF NOT EXISTS review_queue (
+      merchant_id          TEXT NOT NULL,
+      sku                  TEXT NOT NULL,
+      reason               TEXT NOT NULL,
+      title                TEXT,
+      candidate_product_id TEXT,
+      score                REAL,
+      price_impact_cents   INTEGER NOT NULL DEFAULT 0,
+      status               TEXT NOT NULL DEFAULT 'pending',
+      first_seen           TEXT NOT NULL,
+      last_seen            TEXT NOT NULL,
+      resolved_at          TEXT,
+      PRIMARY KEY (merchant_id, sku, reason)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_review_pending
+      ON review_queue (status, price_impact_cents DESC);
   `);
 
   const insertProduct = db.prepare(`
@@ -137,6 +172,114 @@ export function openStore(path = ":memory:") {
         prev = row;
       }
       return out;
+    },
+
+    // ── Matching overrides ──────────────────────────────────────────────
+
+    /**
+     * Record a human decision.
+     * @param {"merge"|"split"} polarity
+     */
+    addOverride(merchantId, sku, productId, polarity, note = null) {
+      const now = new Date().toISOString();
+      // A listing belongs to exactly one product, so a new merge replaces any
+      // previous one. Splits accumulate — a listing can be "not that, and not
+      // that either".
+      if (polarity === "merge") {
+        db.prepare(`DELETE FROM match_overrides WHERE merchant_id = ? AND sku = ? AND polarity = 'merge'`)
+          .run(merchantId, String(sku));
+      }
+      db.prepare(`
+        INSERT INTO match_overrides (merchant_id, sku, product_id, polarity, note, created_at)
+        VALUES (?, ?, ?, ?, ?, ?)
+        ON CONFLICT (merchant_id, sku, product_id, polarity) DO UPDATE SET note = excluded.note
+      `).run(merchantId, String(sku), productId, polarity, note, now);
+
+      // One listing can sit in the queue under several reasons at once — a
+      // near miss that is also the only merchant stocking it. Deciding the
+      // listing settles all of them; leaving the others pending would put the
+      // same item back in front of the reviewer with nothing left to decide.
+      db.prepare(`
+        UPDATE review_queue SET status = 'superseded', resolved_at = ?
+        WHERE merchant_id = ? AND sku = ? AND status = 'pending'
+      `).run(now, merchantId, String(sku));
+    },
+
+    /**
+     * Every override, shaped for the matcher.
+     * @returns {Map<string, {mergeInto: string|null, blocked: Set<string>}>}
+     */
+    overrides() {
+      const map = new Map();
+      for (const row of db.prepare(`SELECT * FROM match_overrides`).all()) {
+        const key = `${row.merchant_id}|${row.sku}`;
+        if (!map.has(key)) map.set(key, { mergeInto: null, blocked: new Set() });
+        const rule = map.get(key);
+        if (row.polarity === "merge") rule.mergeInto = row.product_id;
+        else rule.blocked.add(row.product_id);
+      }
+      return map;
+    },
+
+    // ── Review queue ────────────────────────────────────────────────────
+
+    /**
+     * Upsert today's queue. Re-seeing an item refreshes its impact and
+     * last_seen but never resurrects one a human has already resolved, and
+     * never loses the date it first appeared.
+     */
+    queueReview(items, day = new Date().toISOString().slice(0, 10)) {
+      const stmt = db.prepare(`
+        INSERT INTO review_queue
+          (merchant_id, sku, reason, title, candidate_product_id, score,
+           price_impact_cents, status, first_seen, last_seen)
+        VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?)
+        ON CONFLICT (merchant_id, sku, reason) DO UPDATE SET
+          title                = excluded.title,
+          candidate_product_id = excluded.candidate_product_id,
+          score                = excluded.score,
+          price_impact_cents   = excluded.price_impact_cents,
+          last_seen            = excluded.last_seen
+      `);
+      for (const item of items) {
+        stmt.run(item.merchantId, String(item.sku), item.reason, item.title ?? null,
+          item.candidateProductId ?? null, item.score ?? null,
+          item.priceImpactCents ?? 0, day, day);
+      }
+    },
+
+    /** Worth-most-money first. A queue sorted by score trains you to skim it. */
+    pendingReview(limit = 50) {
+      return db.prepare(`
+        SELECT * FROM review_queue WHERE status = 'pending'
+        ORDER BY price_impact_cents DESC, score DESC LIMIT ?
+      `).all(limit);
+    },
+
+    /**
+     * Resolve one queue item and write the override that makes it stick.
+     *
+     * @param {"merge"|"split"|"ignore"} decision
+     * @param {string} [productId] required for merge and split
+     */
+    resolveReview(merchantId, sku, reason, decision, productId = null, note = null) {
+      if ((decision === "merge" || decision === "split") && !productId) {
+        throw new Error(`${decision} needs a productId`);
+      }
+      if (decision !== "ignore") {
+        this.addOverride(merchantId, sku, productId, decision, note);
+      }
+      db.prepare(`
+        UPDATE review_queue SET status = ?, resolved_at = ?
+        WHERE merchant_id = ? AND sku = ? AND reason = ?
+      `).run(decision, new Date().toISOString(), merchantId, String(sku), reason);
+    },
+
+    reviewCounts() {
+      return db.prepare(`
+        SELECT status, COUNT(*) AS n, SUM(price_impact_cents) AS impact
+        FROM review_queue GROUP BY status
+      `).all();
     },
 
     /** Early-access capture. Idempotent — signing up twice is not an error. */

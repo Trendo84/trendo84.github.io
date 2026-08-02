@@ -22,8 +22,10 @@ const [, , day = new Date().toISOString().slice(0, 10), dbPath = "counter.db"] =
 const store = openStore(dbPath);
 const started = Date.now();
 
+// Human decisions are applied before scoring, so a resolved listing never
+// re-enters the queue after tomorrow's run.
 const { listings, failures } = await fetchAll("");
-const { products, review } = groupListings(listings);
+const { products, review } = groupListings(listings, { overrides: store.overrides() });
 
 let snapshots = 0;
 for (const group of products) {
@@ -33,9 +35,15 @@ for (const group of products) {
 
 console.log(`[${day}] ${products.length} products, ${snapshots} snapshots, ${Date.now() - started}ms`);
 
+store.queueReview(review, day);
 if (review.length) {
-  console.log(`[${day}] ${review.length} listing(s) need a human:`);
-  for (const r of review) console.log(`         ${r.why}  ${r.listing.merchantId}/${r.listing.sku}`);
+  const atStake = review.reduce((n, r) => n + r.priceImpactCents, 0);
+  console.log(`[${day}] ${review.length} listing(s) queued for review, ` +
+    `$${(atStake / 100).toFixed(2)} of price difference at stake:`);
+  for (const r of review.slice(0, 10)) {
+    console.log(`         ${r.reason.padEnd(22)} ${r.merchantId}/${r.sku}` +
+      `  $${(r.priceImpactCents / 100).toFixed(2)}`);
+  }
 }
 
 // A merchant failing is not a neutral event: that day's comparison is

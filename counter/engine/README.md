@@ -101,13 +101,54 @@ CREATE TABLE snapshots (
 The `UNIQUE` constraint makes a re-run idempotent: scraping twice in one day
 can't create a phantom price movement.
 
+## The review queue
+
+`groupListings()` is pure and re-derives every group from the raw listings on
+each run, so a human decision needs somewhere to live and something to consult
+it. That's `match_overrides`, keyed on `(merchant_id, sku)` — the only thing
+stable across re-derivation — and applied *inside* the grouping pass, before
+scoring.
+
+Both polarities exist. Without `split`, a reviewer rejecting a bad match
+watches it reappear identically tomorrow.
+
+Three things reach the queue:
+
+| Reason | Trigger |
+|---|---|
+| `near-miss` | Best candidate scored between `NEAR_MISS_FLOOR` (0.45) and 0.72 |
+| `single-merchant` | A product only one of five merchants stocks |
+| `duplicate-merchant-sku` | Two SKUs from one merchant claiming the same product |
+
+One row per listing, never one per candidate pair — that bounds the queue at
+O(listings) and is what makes a floor as low as 0.45 affordable.
+
+`single-merchant` is the one that catches what a threshold can't: two listings
+for the same item, worded so differently they never came close, each rendering
+alone. Bunnings at $21.00 shown by itself when Total Tools has it at $19.95 is
+the exact failure the tool exists to prevent, and a score-based rule never sees
+it.
+
+The queue is ordered by **price impact** — how far the number a user sees would
+move if the decision went the other way. A queue sorted by score trains you to
+click through it; one sorted by money doesn't.
+
+```js
+store.queueReview(review, "2026-08-02");
+store.pendingReview();                    // worth-most-money first
+store.resolveReview("total-tools", "B1", "near-miss", "merge", "josco:100gd10");
+```
+
+Deciding a listing supersedes every other pending row for it — a listing can be
+queued as both a near miss and a lone merchant, and one decision settles both.
+
 ## Not done yet
 
 - **Live adapters are unverified.** `src/adapters/live.js` has a search URL per
   merchant, none of them checked against the real site. Everything runs on
   fixtures until you do that.
-- **No review queue UI.** Held listings are reported by the CLI and the ingest
-  job, but matching them by hand is still a database edit.
+- **No review queue API or UI.** The schema and the override path are done and
+  tested; `/api/review` and the screen on top of it are not.
 - **No email delivery.** `formatDigest()` produces the text; nothing sends it.
 - **No auth.** The API is open, so don't put it on a public host as-is.
 
