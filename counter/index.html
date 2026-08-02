@@ -184,6 +184,8 @@
   .signup input{background:var(--panel);border:1px solid var(--line);border-radius:4px;color:var(--ink);
     padding:14px 16px;font-family:var(--mono);font-size:13px;min-width:280px}
   .signup input:focus{outline:none;border-color:var(--hi)}
+  .signup button[disabled]{opacity:.6;cursor:not-allowed}
+  .hp{position:absolute!important;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none}
 
   footer{border-top:1px solid var(--line);padding:34px 0;color:var(--faint);
     font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase}
@@ -401,11 +403,12 @@
   <div class="eyebrow" id="early">Early access</div>
   <h2>Stop ringing around. <em>Start knowing.</em></h2>
   <p class="lede" style="margin:16px auto 0">One email when it launches. Launch price locked for a year. That's the whole offer.</p>
-  <form class="signup" onsubmit="event.preventDefault();this.querySelector('input').value='';this.querySelector('.btn').textContent='On the list ✓'">
-    <input type="email" placeholder="you@yourtrade.com.au" required aria-label="Email address" />
-    <button class="btn primary" type="submit">Get early access</button>
+  <form class="signup" id="signup" novalidate>
+    <input type="email" name="email" placeholder="you@yourtrade.com.au" required aria-label="Email address" autocomplete="email" />
+    <input type="text" name="company" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+    <button class="btn primary" type="submit" id="signup-btn">Get early access</button>
   </form>
-  <p class="disclaimer" style="margin:18px auto 0">Form is a demo — not wired to a backend yet.</p>
+  <p class="disclaimer" id="signup-status" role="status" aria-live="polite" style="margin:18px auto 0">One email when it launches. No newsletter.</p>
 </div></section>
 
 <footer><div class="wrap">
@@ -473,6 +476,51 @@ PRODUCTS.forEach((p, i) => {
   chips.appendChild(b);
 });
 render(0);
+
+/* ─── Email capture ──────────────────────────────────────────────────────────
+   Paste the endpoint here and it's live. Nothing else needs to change.
+   mode "form" → Formspree / Getform / Netlify (sends FormData)
+   mode "json" → Worker / Supabase function / your own API (sends JSON)
+   Leave endpoint empty and the form stays in demo mode.                      */
+const SIGNUP = { endpoint: "", mode: "json" };
+
+const form = document.getElementById("signup");
+const statusEl = document.getElementById("signup-status");
+const signupBtn = document.getElementById("signup-btn");
+const validEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+
+function setStatus(msg, kind){
+  statusEl.textContent = msg;
+  statusEl.style.color = kind === "err" ? "var(--warn)" : kind === "ok" ? "var(--win)" : "var(--faint)";
+}
+
+form.addEventListener("submit", async e => {
+  e.preventDefault();
+  if (form.company.value) return;                     // honeypot: silent drop
+  const email = form.email.value.trim();
+  if (!validEmail(email)) { setStatus("That email doesn't look right.", "err"); form.email.focus(); return; }
+  if (!SIGNUP.endpoint) { setStatus("Demo mode — signup endpoint not connected yet.", "err"); return; }
+
+  const label = signupBtn.textContent;
+  signupBtn.disabled = true;
+  signupBtn.textContent = "Sending…";
+  setStatus("One email when it launches. No newsletter.", "");
+
+  try {
+    const res = SIGNUP.mode === "form"
+      ? await fetch(SIGNUP.endpoint, { method:"POST", headers:{ Accept:"application/json" }, body:new FormData(form) })
+      : await fetch(SIGNUP.endpoint, { method:"POST", headers:{ "Content-Type":"application/json" },
+          body:JSON.stringify({ email, source:"counter-landing" }) });
+    if (!res.ok) throw new Error(res.status);
+    form.reset();
+    signupBtn.textContent = "On the list ✓";
+    setStatus("Done. You'll get one email when it's live.", "ok");
+  } catch (err) {
+    signupBtn.disabled = false;
+    signupBtn.textContent = label;
+    setStatus("Couldn't sign you up just then. Try again in a moment.", "err");
+  }
+});
 
 const io = new IntersectionObserver(es => es.forEach(e => {
   if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
