@@ -1,0 +1,6 @@
+[
+  { "merchantId":"bunnings", "sku":"0148821", "title":"Makita 18V Brushless Impact Driver Skin Only DTD153Z", "priceCents":19900, "inStock":true, "url":"https://www.bunnings.com.au/" },
+  { "merchantId":"bunnings", "sku":"0212440", "title":"Sika Sikaflex-11FC Adhesive Sealant 300ml Grey", "priceCents":1490, "inStock":true, "gtin":"9312345678901", "unit":{"size":300,"uom":"ml"} },
+  { "merchantId":"bunnings", "sku":"0330192", "title":"Josco 100mm Metal Grinding Disc 10 Pack", "priceCents":2298, "inStock":true, "unit":{"size":10,"uom":"ea"} },
+  { "merchantId":"bunnings", "sku":"0441003", "title":"Kembla 15mm x 3m Copper Pipe Hard Drawn", "priceCents":4690, "inStock":true, "unit":{"size":3,"uom":"m"} }
+]

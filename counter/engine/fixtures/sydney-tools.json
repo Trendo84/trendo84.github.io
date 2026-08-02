@@ -1,0 +1,5 @@
+[
+  { "merchantId":"sydney-tools", "sku":"DTD153Z", "title":"Makita DTD153Z 18V Brushless Impact Driver Skin", "priceCents":17900, "inStock":true },
+  { "merchantId":"sydney-tools", "sku":"DTD153Z-B", "title":"Makita DTD153Z Impact Driver 18V Skin Only", "priceCents":18500, "inStock":true },
+  { "merchantId":"sydney-tools", "sku":"JOSCO100", "title":"Josco 100mm Grinding Disc 10 Pack", "priceCents":2100, "inStock":true, "unit":{"size":10,"uom":"ea"} }
+]

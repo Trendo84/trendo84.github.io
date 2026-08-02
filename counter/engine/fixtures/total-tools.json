@@ -1,0 +1,6 @@
+[
+  { "merchantId":"total-tools", "sku":"MAKDTD153Z", "title":"Makita DTD153Z 18V Cordless Brushless Impact Driver - Tool Only", "priceCents":18900, "inStock":true },
+  { "merchantId":"total-tools", "sku":"MAKTD001GZ", "title":"Makita TD001GZ 40V Max XGT Brushless Impact Driver", "priceCents":32900, "inStock":true },
+  { "merchantId":"total-tools", "sku":"SIK11FCGR", "title":"Sika Sikaflex 11FC Multipurpose Sealant Grey 300ml", "priceCents":1650, "inStock":true, "unit":{"size":300,"uom":"ml"} },
+  { "merchantId":"total-tools", "sku":"JOS100GD10", "title":"Josco 100mm x 6mm Metal Grinding Disc 10Pk", "priceCents":1995, "inStock":true, "unit":{"size":10,"uom":"ea"} }
+]

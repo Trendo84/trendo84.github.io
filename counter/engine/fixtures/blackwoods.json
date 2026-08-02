@@ -1,0 +1,6 @@
+[
+  { "merchantId":"blackwoods", "sku":"05512210", "title":"Makita Impact Driver Brushless 18V DTD153Z Skin Only", "priceCents":21400, "inStock":true },
+  { "merchantId":"blackwoods", "sku":"04410021", "title":"Sika Sikaflex-11FC Sealant Adhesive Grey 300ml Cartridge", "priceCents":1520, "inStock":true, "gtin":"9312345678901", "unit":{"size":300,"uom":"ml"} },
+  { "merchantId":"blackwoods", "sku":"03390110", "title":"Josco Grinding Disc Metal 100mm 10 Pack", "priceCents":2460, "inStock":false, "unit":{"size":10,"uom":"ea"} },
+  { "merchantId":"blackwoods", "sku":"02218844", "title":"Kembla Copper Pipe 15mm x 3m Hard Drawn", "priceCents":4920, "inStock":true, "unit":{"size":3,"uom":"m"} }
+]

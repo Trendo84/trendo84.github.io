@@ -1,0 +1,4 @@
+[
+  { "merchantId":"reece", "sku":"911550", "title":"Sika Sikaflex 11FC Sealant Grey 300ml", "priceCents":1740, "inStock":true, "unit":{"size":300,"uom":"ml"} },
+  { "merchantId":"reece", "sku":"200153", "title":"Kembla 15mm x 3m Hard Drawn Copper Pipe", "priceCents":4210, "inStock":true, "unit":{"size":3,"uom":"m"} }
+]
