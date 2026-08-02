@@ -34,6 +34,19 @@ export function openStore(path = ":memory:") {
 
     CREATE INDEX IF NOT EXISTS idx_snapshots_product
       ON snapshots (product_id, captured_at DESC);
+
+    CREATE TABLE IF NOT EXISTS signups (
+      email       TEXT PRIMARY KEY,
+      source      TEXT,
+      created_at  TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS watches (
+      email       TEXT NOT NULL,
+      product_id  TEXT NOT NULL,
+      created_at  TEXT NOT NULL,
+      PRIMARY KEY (email, product_id)
+    );
   `);
 
   const insertProduct = db.prepare(`
@@ -124,6 +137,31 @@ export function openStore(path = ":memory:") {
         prev = row;
       }
       return out;
+    },
+
+    /** Early-access capture. Idempotent — signing up twice is not an error. */
+    addSignup(email, source = "counter-landing") {
+      db.prepare(`
+        INSERT INTO signups (email, source, created_at) VALUES (?, ?, ?)
+        ON CONFLICT (email) DO NOTHING
+      `).run(String(email).trim().toLowerCase(), source, new Date().toISOString());
+    },
+
+    signupCount() {
+      return db.prepare(`SELECT COUNT(*) AS n FROM signups`).get().n;
+    },
+
+    watch(email, productId) {
+      db.prepare(`
+        INSERT INTO watches (email, product_id, created_at) VALUES (?, ?, ?)
+        ON CONFLICT (email, product_id) DO NOTHING
+      `).run(String(email).toLowerCase(), productId, new Date().toISOString());
+    },
+
+    watchedBy(email) {
+      return db.prepare(`SELECT product_id FROM watches WHERE email = ?`)
+        .all(String(email).toLowerCase())
+        .map(r => r.product_id);
     },
 
     close() { db.close(); }

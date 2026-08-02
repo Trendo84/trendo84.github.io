@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Counter — Search</title>
+<meta name="robots" content="noindex" />
+<meta name="theme-color" content="#0B0C0E" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230B0C0E'/%3E%3Crect x='10' y='16' width='44' height='5' fill='%23FFE500'/%3E%3Crect x='10' y='29' width='30' height='5' fill='%23FFE500'/%3E%3Crect x='10' y='42' width='38' height='5' fill='%23FFE500'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0C0E; --panel:#141619; --panel-2:#1A1D22; --line:#24272E;
+    --ink:#F2F4F7; --dim:#9AA1AC; --faint:#6B7280;
+    --hi:#FFE500; --win:#3ED67F; --warn:#FF7A45;
+    --cond:"Barlow Condensed",Impact,sans-serif;
+    --body:"Barlow",system-ui,-apple-system,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px}
+  a{color:inherit}
+  .hazard{height:5px;background:repeating-linear-gradient(45deg,var(--hi),var(--hi) 12px,#0B0C0E 12px,#0B0C0E 24px)}
+
+  header{border-bottom:1px solid var(--line);background:var(--panel-2)}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;height:60px;gap:16px}
+  .brand{display:flex;align-items:center;gap:9px;font-family:var(--cond);font-size:23px;font-weight:700;
+    letter-spacing:.04em;text-transform:uppercase;text-decoration:none}
+  .mark{width:23px;height:23px;border-radius:5px;background:var(--hi);position:relative;flex:none}
+  .mark::before,.mark::after{content:"";position:absolute;left:4px;height:3px;background:#0B0C0E}
+  .mark::before{top:6px;width:15px}
+  .mark::after{top:13px;width:9px}
+  .settings-toggle{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--dim);background:none;border:1px solid var(--line);padding:9px 14px;border-radius:4px;cursor:pointer}
+  .settings-toggle:hover{color:var(--hi);border-color:var(--hi)}
+
+  .searchbar{display:flex;gap:10px;margin:28px 0 8px;flex-wrap:wrap}
+  .searchbar input{flex:1;min-width:230px;background:var(--panel);border:1px solid var(--line);border-radius:5px;
+    color:var(--ink);padding:15px 16px;font-family:var(--mono);font-size:14px}
+  .searchbar input:focus{outline:none;border-color:var(--hi)}
+  .searchbar button{font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.16em;
+    text-transform:uppercase;padding:0 26px;border-radius:5px;border:none;background:var(--hi);color:#0B0C0E;cursor:pointer}
+  .searchbar button[disabled]{opacity:.55;cursor:not-allowed}
+
+  .hint{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+  .hint b{color:var(--hi);font-weight:500}
+
+  .settings{display:none;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:20px;margin-top:16px}
+  .settings.open{display:block}
+  .settings h2{font-family:var(--cond);font-size:19px;text-transform:uppercase;letter-spacing:.03em}
+  .settings p{color:var(--dim);font-size:13.5px;margin-top:6px;max-width:60ch}
+  .disc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:16px}
+  .disc{display:flex;align-items:center;gap:9px;background:var(--bg);border:1px solid var(--line);
+    border-radius:5px;padding:10px 12px}
+  .disc label{font-family:var(--mono);font-size:11px;color:var(--dim);flex:1}
+  .disc input{width:56px;background:transparent;border:none;border-bottom:1px solid var(--line);
+    color:var(--hi);font-family:var(--mono);font-size:14px;text-align:right;padding:2px 4px}
+  .disc input:focus{outline:none;border-color:var(--hi)}
+  .disc span{font-family:var(--mono);font-size:12px;color:var(--faint)}
+
+  .product{background:var(--panel);border:1px solid var(--line);border-radius:8px;margin-top:20px;overflow:hidden}
+  .product-hd{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;
+    justify-content:space-between;gap:14px;align-items:baseline;flex-wrap:wrap}
+  .product-hd h3{font-size:16px;font-weight:600}
+  .product-hd .meta{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--faint)}
+
+  .switched{background:rgba(255,229,0,.1);border-bottom:1px solid var(--line);padding:11px 18px;
+    font-family:var(--mono);font-size:11.5px;color:var(--hi)}
+
+  table{width:100%;border-collapse:collapse}
+  th{text-align:left;font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--faint);padding:11px 18px;border-bottom:1px solid var(--line);font-weight:500}
+  th.r,td.r{text-align:right}
+  td{padding:13px 18px;border-bottom:1px solid rgba(36,39,46,.55);font-size:14.5px}
+  tr:last-child td{border-bottom:none}
+  tr.best{background:linear-gradient(90deg,rgba(255,229,0,.08),transparent)}
+  tr.best td:first-child{box-shadow:inset 3px 0 0 var(--hi)}
+  tr.oos td{color:var(--faint)}
+  .merch{display:flex;align-items:center;gap:10px}
+  .swatch{width:9px;height:9px;border-radius:2px;flex:none}
+  .price{font-family:var(--mono);font-size:15.5px;font-weight:600;font-variant-numeric:tabular-nums}
+  .was{font-family:var(--mono);font-size:11px;color:var(--faint);text-decoration:line-through;margin-left:7px}
+  .delta{font-family:var(--mono);font-size:12px;color:var(--warn);font-variant-numeric:tabular-nums}
+  .delta.zero{color:var(--win)}
+  .conf{font-family:var(--mono);font-size:10px;color:var(--faint)}
+
+  .msg{padding:34px 18px;text-align:center;color:var(--dim);font-size:15px}
+  .notice{margin-top:18px;border-left:3px solid var(--warn);background:var(--panel);
+    padding:13px 16px;font-size:13.5px;color:var(--dim)}
+  footer{margin:44px 0 30px;color:var(--faint);font-family:var(--mono);font-size:10px;
+    letter-spacing:.12em;text-transform:uppercase;text-align:center}
+</style>
+</head>
+<body>
+<div class="hazard"></div>
+
+<header><div class="wrap">
+  <a class="brand" href="/"><span class="mark"></span> Counter</a>
+  <button class="settings-toggle" id="toggle">Your trade discounts</button>
+</div></header>
+
+<main class="wrap">
+  <form class="searchbar" id="form">
+    <input id="q" type="search" placeholder="Search a product, brand or model code…"
+           value="impact driver" autocomplete="off" aria-label="Search products" />
+    <button type="submit" id="go">Compare</button>
+  </form>
+  <div class="hint">Try <b>impact driver</b> · <b>sikaflex</b> · <b>grinding disc</b> · <b>copper pipe</b></div>
+
+  <section class="settings" id="settings">
+    <h2>Your trade discounts</h2>
+    <p>Percent off list at each merchant. Stored on this device only — never sent anywhere but your own comparison. Leave blank where you buy at list.</p>
+    <div class="disc-grid" id="discounts"></div>
+  </section>
+
+  <div id="results"></div>
+</main>
+
+<footer>Counter · Independent · Not affiliated with any retailer</footer>
+
+<script type="module">
+const MERCHANTS = [
+  { id:"bunnings",     name:"Bunnings Trade", colour:"#0D7B3E" },
+  { id:"total-tools",  name:"Total Tools",    colour:"#E01E26" },
+  { id:"sydney-tools", name:"Sydney Tools",   colour:"#F5A623" },
+  { id:"blackwoods",   name:"Blackwoods",     colour:"#2C6CB0" },
+  { id:"reece",        name:"Reece",          colour:"#00539B" }
+];
+const STORAGE_KEY = "counter.discounts";
+const money = c => "$" + (c / 100).toFixed(2);
+const nameOf = id => MERCHANTS.find(m => m.id === id)?.name ?? id;
+const colourOf = id => MERCHANTS.find(m => m.id === id)?.colour ?? "#6B7280";
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
+
+const $ = id => document.getElementById(id);
+const results = $("results");
+
+function loadDiscounts() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) ?? {}; } catch { return {}; }
+}
+function saveDiscounts(d) { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
+
+let discounts = loadDiscounts();
+
+$("discounts").innerHTML = MERCHANTS.map(m => `
+  <div class="disc">
+    <label for="d-${m.id}">${m.name}</label>
+    <input id="d-${m.id}" data-merchant="${m.id}" type="number" min="0" max="95" step="0.5"
+           inputmode="decimal" value="${discounts[m.id] ?? ""}" placeholder="0" />
+    <span>%</span>
+  </div>`).join("");
+
+$("discounts").addEventListener("input", e => {
+  const id = e.target.dataset.merchant;
+  const val = Number(e.target.value);
+  if (Number.isFinite(val) && val > 0) discounts[id] = Math.min(val, 95);
+  else delete discounts[id];
+  saveDiscounts(discounts);
+  search();
+});
+
+$("toggle").addEventListener("click", () => $("settings").classList.toggle("open"));
+
+function discountParam() {
+  const pairs = Object.entries(discounts).map(([id, pct]) => `${id}:${pct}`);
+  return pairs.length ? `&discounts=${encodeURIComponent(pairs.join(","))}` : "";
+}
+
+async function search() {
+  const q = $("q").value.trim();
+  if (!q) return;
+  $("go").disabled = true;
+  results.innerHTML = `<div class="msg">Checking every merchant…</div>`;
+
+  try {
+    const res = await fetch(`/api/search?q=${encodeURIComponent(q)}${discountParam()}`);
+    if (!res.ok) throw new Error(`API returned ${res.status}`);
+    render(await res.json());
+  } catch (err) {
+    results.innerHTML = `<div class="msg">Couldn't reach the engine — is the server running?<br>
+      <span class="conf">${esc(err.message)}</span></div>`;
+  } finally {
+    $("go").disabled = false;
+  }
+}
+
+function render(data) {
+  if (!data.products.length) {
+    results.innerHTML = `<div class="msg">Nothing matched that. Try a model code — they match best.</div>`;
+    return;
+  }
+
+  results.innerHTML = data.products.map(p => `
+    <article class="product">
+      <div class="product-hd">
+        <h3>${esc(p.title)}</h3>
+        <span class="meta">${esc(p.productId)} · spread ${money(p.spreadCents)}</span>
+      </div>
+      ${p.winnerSwitched ? `<div class="switched">
+        On list, ${esc(nameOf(p.listWinner))} is cheapest — on your account, ${esc(nameOf(p.yourWinner))} is.
+      </div>` : ""}
+      <table>
+        <thead><tr>
+          <th>Merchant</th><th class="r">Price</th><th class="r">vs cheapest</th>
+        </tr></thead>
+        <tbody>${p.rows.map(rowHtml).join("")}</tbody>
+      </table>
+    </article>`).join("")
+    + (data.failures?.length ? data.failures.map(f => `<div class="notice">
+        <b>${esc(nameOf(f.merchantId))}</b> couldn't be reached, so it's excluded from this
+        comparison rather than being shown as expensive.</div>`).join("") : "");
+}
+
+function rowHtml(r) {
+  const cls = [r.isCheapest ? "best" : "", r.inStock ? "" : "oos"].filter(Boolean).join(" ");
+  const price = r.inStock
+    ? `<span class="price">${money(r.priceCents)}</span>` +
+      (r.percentOff ? `<span class="was">${money(r.listPriceCents)}</span>` : "")
+    : `<span class="conf">Not stocked</span>`;
+  const delta = !r.inStock ? "—"
+    : r.isCheapest ? `<span class="delta zero">cheapest</span>`
+    : `<span class="delta">+${money(r.deltaCents)}</span>`;
+
+  return `<tr class="${cls}">
+    <td><div class="merch"><span class="swatch" style="background:${colourOf(r.merchantId)}"></span>
+      ${esc(nameOf(r.merchantId))}
+      ${r.confidence < 1 ? `<span class="conf">match ${r.confidence.toFixed(2)}</span>` : ""}
+    </div></td>
+    <td class="r">${price}</td>
+    <td class="r">${delta}</td>
+  </tr>`;
+}
+
+$("form").addEventListener("submit", e => { e.preventDefault(); search(); });
+search();
+</script>
+</body>
+</html>

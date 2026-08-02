@@ -481,8 +481,11 @@ render(0);
    Paste the endpoint here and it's live. Nothing else needs to change.
    mode "form" → Formspree / Getform / Netlify (sends FormData)
    mode "json" → Worker / Supabase function / your own API (sends JSON)
-   Leave endpoint empty and the form stays in demo mode.                      */
-const SIGNUP = { endpoint: "", mode: "json" };
+   Served by engine/src/server.js it already works — /api/signup writes to
+   SQLite. On GitHub Pages there is no backend, so it stays in demo mode until
+   you paste a hosted endpoint here.                                          */
+const LOCAL = ["localhost", "127.0.0.1"].includes(location.hostname);
+const SIGNUP = { endpoint: LOCAL ? "/api/signup" : "", mode: "json" };
 
 const form = document.getElementById("signup");
 const statusEl = document.getElementById("signup-status");

@@ -103,7 +103,79 @@ can't create a phantom price movement.
 
 ## Not done yet
 
-- Live adapters (fixtures only)
-- Per-user trade discount maths
-- Price-move alerting
-- The review queue UI
+- **Live adapters are unverified.** `src/adapters/live.js` has a search URL per
+  merchant, none of them checked against the real site. Everything runs on
+  fixtures until you do that.
+- **No review queue UI.** Held listings are reported by the CLI and the ingest
+  job, but matching them by hand is still a database edit.
+- **No email delivery.** `formatDigest()` produces the text; nothing sends it.
+- **No auth.** The API is open, so don't put it on a public host as-is.
+
+## Running the whole thing
+
+```bash
+cd counter/engine
+node src/server.js          # http://localhost:8787
+```
+
+| Route | Serves |
+|---|---|
+| `/` | The landing page |
+| `/app/` | The working search UI |
+| `/api/search?q=…&discounts=bunnings:8,reece:22` | Comparisons, discounted |
+| `/api/history?id=makita:dtd153z&merchant=bunnings` | One merchant's price series |
+| `/api/signup` | POST `{email}` — writes to SQLite |
+
+The landing page form posts to `/api/signup` automatically when served from
+localhost, and stays in demo mode on GitHub Pages where there's no backend.
+Paste a hosted endpoint into `SIGNUP` in `counter/index.html` to change that.
+
+The daily job:
+
+```bash
+node src/ingest.js                        # today
+node src/ingest.js 2026-08-02 counter.db  # a specific day
+```
+
+Cron it once a day, not hourly — prices move overnight and the snapshot table
+is unique per day, so extra runs are wasted requests.
+
+## Trade discounts
+
+The differentiator, and the reason the landing page admits it shows list price.
+Discounts live in the browser's localStorage, go to the API as a query param,
+and never touch the archive — Counter stores what merchants publish, not what
+any individual pays.
+
+The output worth having isn't the smaller number, it's `winnerSwitched`: on
+list Sydney Tools wins the Makita at $179, but 25% off at Blackwoods makes
+their $214 into $160.50. Different shop, opposite answer.
+
+## Going live
+
+`src/adapters/live.js` holds one entry per merchant. Each `searchUrl` is
+**unverified** — check it against the real site before trusting it.
+
+Parsing goes after schema.org JSON-LD first, not CSS selectors. Almost every
+retail platform emits it for Google rich results, which means it survives the
+redesigns that break selectors, and they can't quietly drop it without losing
+search traffic.
+
+`src/http.js` is deliberately slow: 1.5s between requests per host, exponential
+backoff, a 12-hour disk cache so development never re-hits a live page, and a
+hard stop on 403 rather than retrying into a legal letter. Read each merchant's
+terms and robots.txt first, and take an affiliate product feed over scraping
+wherever one exists — licensed, structured, and it pays you.
+
+Check a merchant still parses after a redesign:
+
+```bash
+node -e 'import("./src/adapters/live.js").then(m=>m.probe("bunnings").then(console.log))'
+```
+
+## Alerts
+
+`buildDigest()` reads the archive back. Beyond single jumps it detects *creep* —
+several small rises from the same merchant on the same product, where no
+individual move trips a threshold but the cumulative climb matters. Four 3%
+rises is 12.5%, and nobody sends a letter about it.
