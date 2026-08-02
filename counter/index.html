@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Counter — Know what it costs before you get to the counter.</title>
+<meta name="description" content="Counter compares live prices on the gear Australian trades buy every week — Bunnings, Total Tools, Sydney Tools, Blackwoods and Reece. One search, every merchant, today's price." />
+<meta property="og:title" content="Counter — One search. Every merchant. Today's price." />
+<meta property="og:description" content="Live price comparison across Australia's trade merchants. Stop ringing around. Stop guessing." />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#0B0C0E" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230B0C0E'/%3E%3Crect x='10' y='16' width='44' height='5' fill='%23FFE500'/%3E%3Crect x='10' y='29' width='30' height='5' fill='%23FFE500'/%3E%3Crect x='10' y='42' width='38' height='5' fill='%23FFE500'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0C0E; --panel:#141619; --panel-2:#1A1D22; --line:#24272E;
+    --ink:#F2F4F7; --dim:#9AA1AC; --faint:#6B7280;
+    --hi:#FFE500; --hi-deep:#E5CE00; --win:#3ED67F; --warn:#FF7A45;
+    --cond:"Barlow Condensed",Impact,sans-serif;
+    --body:"Barlow",system-ui,-apple-system,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,monospace;
+    --maxw:1140px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  a{color:inherit}
+  .mono{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase}
+  .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+  /* hazard stripe */
+  .hazard{height:6px;background:repeating-linear-gradient(45deg,var(--hi),var(--hi) 14px,#0B0C0E 14px,#0B0C0E 28px)}
+
+  /* nav */
+  nav{position:sticky;top:0;z-index:40;background:rgba(11,12,14,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--cond);font-size:26px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+  .mark{width:26px;height:26px;border-radius:6px;background:var(--hi);position:relative;flex:none}
+  .mark::before,.mark::after{content:"";position:absolute;left:5px;height:3px;background:#0B0C0E}
+  .mark::before{top:7px;width:16px}
+  .mark::after{top:15px;width:10px}
+  .links{display:flex;gap:26px;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+  .links a{text-decoration:none}
+  .links a:hover{color:var(--hi)}
+  @media(max-width:780px){.links{display:none}}
+
+  .btn{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:11.5px;font-weight:600;
+    letter-spacing:.16em;text-transform:uppercase;padding:13px 22px;border-radius:4px;text-decoration:none;
+    border:1px solid transparent;transition:transform .15s ease,background .15s ease,border-color .15s ease}
+  .btn.primary{background:var(--hi);color:#0B0C0E}
+  .btn.primary:hover{background:#fff;transform:translateY(-1px)}
+  .btn.ghost{border-color:var(--line);color:var(--dim)}
+  .btn.ghost:hover{border-color:var(--hi);color:var(--ink)}
+  .btn.sm{padding:10px 16px;font-size:10.5px}
+
+  /* hero */
+  header.hero{padding:74px 0 44px;position:relative;overflow:hidden}
+  header.hero::before{content:"";position:absolute;top:-220px;left:50%;transform:translateX(-50%);
+    width:900px;height:520px;background:radial-gradient(ellipse,rgba(255,229,0,.09),transparent 65%);pointer-events:none}
+  .hero .wrap{position:relative;z-index:1}
+  .eyebrow{color:var(--hi);font-family:var(--mono);font-size:11px;letter-spacing:.26em;text-transform:uppercase}
+  h1{font-family:var(--cond);font-size:clamp(46px,8.4vw,92px);font-weight:700;line-height:.94;
+    letter-spacing:.01em;text-transform:uppercase;margin-top:16px;max-width:15ch}
+  h1 em{font-style:normal;color:var(--hi)}
+  .sub{color:var(--dim);font-size:clamp(16px,2vw,19px);max-width:56ch;margin-top:20px}
+  .cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+  .hero-note{margin-top:16px;color:var(--faint);font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase}
+
+  /* demo */
+  .demo{margin-top:44px;border:1px solid var(--line);border-radius:10px;background:var(--panel);overflow:hidden}
+  .demo-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;
+    padding:14px 18px;border-bottom:1px solid var(--line);background:var(--panel-2);flex-wrap:wrap}
+  .search{display:flex;align-items:center;gap:11px;color:var(--dim);font-family:var(--mono);font-size:13px;flex:1;min-width:200px}
+  .search .cursor{width:9px;height:17px;background:var(--hi);animation:blink 1.1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+  @media(prefers-reduced-motion:reduce){.search .cursor{animation:none}}
+  .stamp{color:var(--faint);font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+
+  .chips{display:flex;gap:8px;padding:14px 18px;overflow-x:auto;border-bottom:1px solid var(--line);scrollbar-width:thin}
+  .chip{flex:none;font-family:var(--mono);font-size:11px;letter-spacing:.08em;padding:8px 13px;border-radius:999px;
+    border:1px solid var(--line);color:var(--dim);background:transparent;cursor:pointer;white-space:nowrap;transition:all .15s ease}
+  .chip:hover{color:var(--ink);border-color:var(--faint)}
+  .chip[aria-selected="true"]{background:var(--hi);color:#0B0C0E;border-color:var(--hi);font-weight:600}
+
+  .table-scroll{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;min-width:560px}
+  thead th{text-align:left;font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--faint);padding:13px 18px;border-bottom:1px solid var(--line);font-weight:500}
+  thead th.r,tbody td.r{text-align:right}
+  tbody td{padding:15px 18px;border-bottom:1px solid rgba(36,39,46,.6);font-size:15px}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr.best{background:linear-gradient(90deg,rgba(255,229,0,.09),rgba(255,229,0,.02))}
+  tbody tr.best td:first-child{box-shadow:inset 3px 0 0 var(--hi)}
+  .merch{display:flex;align-items:center;gap:11px;font-weight:500}
+  .swatch{width:10px;height:10px;border-radius:2px;flex:none}
+  .tag{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+    padding:3px 7px;border-radius:3px;background:var(--hi);color:#0B0C0E;font-weight:600}
+  .price{font-family:var(--mono);font-size:17px;font-weight:600;font-variant-numeric:tabular-nums}
+  .delta{font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums;color:var(--warn)}
+  .delta.zero{color:var(--win)}
+  .unit{font-family:var(--mono);font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums}
+  .nostock{color:var(--faint);font-family:var(--mono);font-size:12px}
+
+  .demo-foot{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    padding:16px 18px;background:var(--panel-2);border-top:1px solid var(--line)}
+  .saving{font-family:var(--cond);font-size:24px;font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+  .saving span{color:var(--win)}
+  .disclaimer{color:var(--faint);font-size:12.5px;max-width:46ch}
+
+  /* sections */
+  section{padding:84px 0;border-top:1px solid var(--line)}
+  h2{font-family:var(--cond);font-size:clamp(32px,5vw,54px);font-weight:700;text-transform:uppercase;
+    letter-spacing:.01em;line-height:1;max-width:20ch}
+  h2 em{font-style:normal;color:var(--hi)}
+  .lede{color:var(--dim);font-size:17px;max-width:56ch;margin-top:16px}
+
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px}
+  @media(max-width:880px){.grid3{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:28px;position:relative}
+  .card .step{font-family:var(--cond);font-size:52px;font-weight:700;color:var(--hi);line-height:.8;opacity:.9}
+  .card h3{font-family:var(--cond);font-size:24px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;margin-top:16px}
+  .card p{color:var(--dim);margin-top:9px;font-size:15px}
+
+  /* honest panel */
+  .honest{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--hi);
+    border-radius:8px;padding:32px;margin-top:40px;display:grid;grid-template-columns:1fr 1fr;gap:34px}
+  @media(max-width:880px){.honest{grid-template-columns:1fr;gap:24px}}
+  .honest h3{font-family:var(--cond);font-size:26px;font-weight:700;text-transform:uppercase;letter-spacing:.02em}
+  .honest p{color:var(--dim);margin-top:12px;font-size:15.5px}
+  .discount-demo{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:20px}
+  .drow{display:flex;align-items:center;justify-content:space-between;padding:9px 0;
+    border-bottom:1px solid rgba(36,39,46,.7);font-family:var(--mono);font-size:13px}
+  .drow:last-child{border-bottom:none;padding-top:14px;margin-top:5px;border-top:1px solid var(--line)}
+  .drow b{color:var(--hi);font-weight:600}
+  .drow .in{color:var(--dim)}
+
+  /* history */
+  .history{display:grid;grid-template-columns:1.1fr 1fr;gap:34px;align-items:center;margin-top:44px}
+  @media(max-width:880px){.history{grid-template-columns:1fr}}
+  .chartbox{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:24px}
+  .chartbox .hd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:18px}
+  .chartbox .hd .t{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+  .chartbox .hd .v{font-family:var(--mono);font-size:20px;font-weight:600}
+  .chartbox .hd .v i{font-style:normal;font-size:12px;color:var(--warn);margin-left:7px}
+  svg.spark{width:100%;height:120px;display:block}
+
+  /* coverage */
+  .merchants{display:flex;flex-wrap:wrap;gap:10px;margin-top:34px}
+  .mbadge{border:1px solid var(--line);background:var(--panel);border-radius:5px;padding:13px 18px;
+    font-family:var(--mono);font-size:12px;letter-spacing:.1em;display:flex;align-items:center;gap:10px}
+  .mbadge.soon{color:var(--faint);border-style:dashed}
+
+  /* pricing */
+  .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px}
+  @media(max-width:880px){.plans{grid-template-columns:1fr}}
+  .plan{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:30px;display:flex;flex-direction:column}
+  .plan.feature{border-color:var(--hi);position:relative;background:linear-gradient(180deg,rgba(255,229,0,.05),var(--panel))}
+  .plan .pill{position:absolute;top:-11px;left:30px}
+  .plan .name{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
+  .plan .amt{font-family:var(--cond);font-size:56px;font-weight:700;line-height:1;margin-top:14px;letter-spacing:.01em}
+  .plan .amt small{font-family:var(--mono);font-size:13px;font-weight:400;color:var(--dim);letter-spacing:.06em}
+  .plan ul{list-style:none;margin-top:22px;flex:1}
+  .plan li{color:var(--dim);font-size:14.5px;padding:8px 0 8px 24px;position:relative}
+  .plan li::before{content:"";position:absolute;left:0;top:15px;width:11px;height:2px;background:var(--hi)}
+  .plan .btn{margin-top:24px;justify-content:center}
+
+  /* faq */
+  .faq{margin-top:40px;border-top:1px solid var(--line)}
+  details{border-bottom:1px solid var(--line)}
+  summary{cursor:pointer;list-style:none;padding:22px 0;font-family:var(--cond);font-size:22px;
+    font-weight:600;text-transform:uppercase;letter-spacing:.02em;display:flex;justify-content:space-between;gap:20px}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"+";color:var(--hi);font-family:var(--mono);font-size:22px;flex:none}
+  details[open] summary::after{content:"–"}
+  details p{color:var(--dim);padding-bottom:24px;max-width:70ch;font-size:15.5px}
+
+  /* final */
+  .final{text-align:center;padding:100px 0}
+  .final h2{margin:0 auto;max-width:16ch}
+  .signup{display:flex;gap:10px;justify-content:center;margin-top:32px;flex-wrap:wrap}
+  .signup input{background:var(--panel);border:1px solid var(--line);border-radius:4px;color:var(--ink);
+    padding:14px 16px;font-family:var(--mono);font-size:13px;min-width:280px}
+  .signup input:focus{outline:none;border-color:var(--hi)}
+
+  footer{border-top:1px solid var(--line);padding:34px 0;color:var(--faint);
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase}
+  footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+  .reveal{opacity:0;transform:translateY(20px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<div class="hazard"></div>
+
+<nav><div class="wrap">
+  <div class="brand"><span class="mark"></span> Counter</div>
+  <div class="links">
+    <a href="#compare">Compare</a><a href="#how">How it works</a>
+    <a href="#coverage">Coverage</a><a href="#pricing">Pricing</a>
+  </div>
+  <a class="btn primary sm" href="#early">Get early access</a>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <div class="eyebrow">For Australian trades</div>
+  <h1>Know what it costs <em>before</em> you get to the counter.</h1>
+  <p class="sub">One search across Bunnings, Total Tools, Sydney Tools, Blackwoods and Reece. Live prices on the gear you buy every week — so you stop ringing around, and stop finding out you overpaid.</p>
+  <div class="cta-row">
+    <a class="btn primary" href="#early">Get early access</a>
+    <a class="btn ghost" href="#compare">See a comparison ↓</a>
+  </div>
+  <div class="hero-note">500 top SKUs at launch · Updated daily · Built in Australia</div>
+
+  <div class="demo reveal" id="compare">
+    <div class="demo-bar">
+      <div class="search">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#6B7280" stroke-width="1.8"><circle cx="7" cy="7" r="5"/><path d="M11 11l4 4"/></svg>
+        <span id="query">makita impact driver 18v</span><span class="cursor"></span>
+      </div>
+      <div class="stamp">Last checked: today, 6:00am AEST</div>
+    </div>
+
+    <div class="chips" id="chips" role="tablist" aria-label="Sample products"></div>
+
+    <div class="table-scroll">
+      <table>
+        <thead><tr>
+          <th>Merchant</th>
+          <th class="r">Price</th>
+          <th class="r">Unit</th>
+          <th class="r">vs cheapest</th>
+        </tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+
+    <div class="demo-foot">
+      <div class="saving">Cheapest today: <span id="saveline">$179.00 — save $35.00</span></div>
+      <p class="disclaimer">Sample data, shown for illustration only. Counter is not affiliated with, endorsed by, or partnered with any retailer listed.</p>
+    </div>
+  </div>
+</div></header>
+
+<section id="how"><div class="wrap reveal">
+  <h2>Five merchants, one price. <em>Yours.</em></h2>
+  <p class="lede">Counter checks every merchant every morning, matches the same product across their catalogues, and shows you one line per shop.</p>
+  <div class="grid3">
+    <div class="card">
+      <div class="step">01</div>
+      <h3>Search once</h3>
+      <p>Type the product, the brand code, or scan the barcode off the box. Counter matches it across every merchant's catalogue — same item, different SKU, same row.</p>
+    </div>
+    <div class="card">
+      <div class="step">02</div>
+      <h3>See the spread</h3>
+      <p>Every merchant, today's price, unit price where it matters, and what you'd save going elsewhere. Out-of-stock shows as out-of-stock, not as a bargain.</p>
+    </div>
+    <div class="card">
+      <div class="step">03</div>
+      <h3>Get told when it moves</h3>
+      <p>Watch the twenty products you buy constantly. Counter emails you when one drops, spikes, or when a merchant quietly walks a price up over a month.</p>
+    </div>
+  </div>
+</div></section>
+
+<section id="trade"><div class="wrap reveal">
+  <h2>About <em>your</em> trade price</h2>
+  <p class="lede">Here's the honest bit, up front, because you'd find out in five minutes anyway.</p>
+
+  <div class="honest">
+    <div>
+      <h3>We show list price. You don't pay list.</h3>
+      <p>Trade pricing is negotiated per account. Counter can't see what your rep gave you — nobody outside your account can.</p>
+      <p>So set your discount once per merchant, and every comparison recalculates against what <em>you</em> actually pay. Your 22% off at Reece against your 8% at Bunnings Trade, on every line, automatically.</p>
+      <p>Even on list alone the spread between merchants is usually wider than the discount between them. That's the part worth knowing before you drive across town.</p>
+    </div>
+    <div class="discount-demo">
+      <div class="drow"><span>Blackwoods list</span><span class="num">$214.00</span></div>
+      <div class="drow"><span class="in">Your account −18%</span><span class="num">−$38.52</span></div>
+      <div class="drow"><span>Sydney Tools list</span><span class="num">$179.00</span></div>
+      <div class="drow"><span class="in">Your account −4%</span><span class="num">−$7.16</span></div>
+      <div class="drow"><span><b>Cheapest for you</b></span><span class="num"><b>$171.84 — Sydney Tools</b></span></div>
+    </div>
+  </div>
+</div></section>
+
+<section id="history"><div class="wrap reveal">
+  <h2>Every price, <em>every day</em>, kept forever.</h2>
+  <p class="lede">Counter logs each merchant's price daily from the day it launches. That archive is the point — it's how you catch the slow creep nobody announces.</p>
+
+  <div class="history">
+    <div class="chartbox">
+      <div class="hd">
+        <div class="t">Sika Sikaflex-11FC 300ml · Merchant A</div>
+        <div class="v">$16.50 <i>▲ 10.7% / 6mo</i></div>
+      </div>
+      <svg class="spark" viewBox="0 0 400 120" preserveAspectRatio="none" role="img" aria-label="Illustrative price trend rising over six months">
+        <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#FFE500" stop-opacity=".28"/>
+          <stop offset="100%" stop-color="#FFE500" stop-opacity="0"/>
+        </linearGradient></defs>
+        <line x1="0" y1="30" x2="400" y2="30" stroke="#24272E" stroke-width="1"/>
+        <line x1="0" y1="60" x2="400" y2="60" stroke="#24272E" stroke-width="1"/>
+        <line x1="0" y1="90" x2="400" y2="90" stroke="#24272E" stroke-width="1"/>
+        <path d="M0,86 L40,84 L80,85 L120,72 L160,71 L200,70 L240,58 L280,57 L320,44 L360,42 L400,30 L400,120 L0,120 Z" fill="url(#g)"/>
+        <path d="M0,86 L40,84 L80,85 L120,72 L160,71 L200,70 L240,58 L280,57 L320,44 L360,42 L400,30"
+              fill="none" stroke="#FFE500" stroke-width="2.5" stroke-linejoin="round"/>
+        <circle cx="400" cy="30" r="4" fill="#FFE500"/>
+      </svg>
+      <p class="disclaimer" style="margin-top:14px">Illustrative shape, not real pricing.</p>
+    </div>
+    <div>
+      <h3 style="font-family:var(--cond);font-size:26px;text-transform:uppercase;letter-spacing:.02em">Four rises, none announced</h3>
+      <p style="color:var(--dim);margin-top:14px;font-size:15.5px">A dollar here, eighty cents there. No merchant sends a letter about it. If you buy forty tubes a month, that quiet climb is real money by Christmas — and you only see it if somebody wrote the price down every single day.</p>
+      <p style="color:var(--dim);margin-top:14px;font-size:15.5px">Counter writes it down. Nobody can go back and collect last year's prices later, which is exactly why this gets more useful the longer it runs.</p>
+    </div>
+  </div>
+</div></section>
+
+<section id="coverage"><div class="wrap reveal">
+  <h2>What's covered</h2>
+  <p class="lede">Launching with the 500 SKUs trades actually reorder — consumables, fixings, blades, sealants, safety, and the twenty power tools everyone owns. The catalogue grows in the order you ask for it.</p>
+  <div class="merchants">
+    <div class="mbadge"><span class="swatch" style="background:#0D7B3E"></span> Bunnings Trade</div>
+    <div class="mbadge"><span class="swatch" style="background:#E01E26"></span> Total Tools</div>
+    <div class="mbadge"><span class="swatch" style="background:#F5A623"></span> Sydney Tools</div>
+    <div class="mbadge"><span class="swatch" style="background:#2C6CB0"></span> Blackwoods</div>
+    <div class="mbadge"><span class="swatch" style="background:#00539B"></span> Reece</div>
+    <div class="mbadge soon">Tradelink · soon</div>
+    <div class="mbadge soon">Mitre 10 · soon</div>
+    <div class="mbadge soon">Metalflex · soon</div>
+  </div>
+</div></section>
+
+<section id="pricing"><div class="wrap reveal">
+  <h2>Priced like a <em>tool</em>, not a subscription trap</h2>
+  <p class="lede">Free tier stays free. No card to start. Cancel from the account page in two clicks, no phone call.</p>
+  <div class="plans">
+    <div class="plan">
+      <div class="name">Casual</div>
+      <div class="amt">$0<small> /mo</small></div>
+      <ul>
+        <li>10 searches a day</li>
+        <li>All merchants, live prices</li>
+        <li>30 days of price history</li>
+      </ul>
+      <a class="btn ghost" href="#early">Start free</a>
+    </div>
+    <div class="plan feature">
+      <span class="tag pill">Most trades</span>
+      <div class="name">Sole trader</div>
+      <div class="amt">$9<small> /mo</small></div>
+      <ul>
+        <li>Unlimited searches</li>
+        <li>Your trade discount per merchant</li>
+        <li>Watch 50 products, price alerts</li>
+        <li>Full price history</li>
+        <li>Barcode scan on site</li>
+      </ul>
+      <a class="btn primary" href="#early">Get early access</a>
+    </div>
+    <div class="plan">
+      <div class="name">Crew</div>
+      <div class="amt">$29<small> /mo</small></div>
+      <ul>
+        <li>Five users</li>
+        <li>Shared buy lists</li>
+        <li>CSV export to your accounts</li>
+        <li>Monthly spend-leak report</li>
+      </ul>
+      <a class="btn ghost" href="#early">Get early access</a>
+    </div>
+  </div>
+</div></section>
+
+<section id="faq"><div class="wrap reveal">
+  <h2>Straight answers</h2>
+  <div class="faq">
+    <details open><summary>Where does the price data come from?</summary>
+      <p>Publicly listed prices from each merchant's own site, collected daily, plus licensed product feeds where a merchant offers one. Counter shows what each retailer publishes — it never guesses, never interpolates, and marks a line as unavailable rather than showing you a stale number.</p></details>
+    <details><summary>Are these my trade prices?</summary>
+      <p>No. They're published list prices. Trade pricing is negotiated per account and no outside party can see yours. Set your discount per merchant in settings and every comparison recalculates against what you actually pay.</p></details>
+    <details><summary>Is Counter affiliated with any of these retailers?</summary>
+      <p>No. No partnership, no endorsement, no sponsorship. Counter is independent, and it stays independent — that's the entire value of it. Where a merchant runs an affiliate program we may earn a commission on a click-through, and any page where that applies says so.</p></details>
+    <details><summary>Do you sell my search data?</summary>
+      <p>No. Your searches, your watch list and your discount settings are yours. They aren't sold, and they aren't shared with the merchants you're comparing.</p></details>
+    <details><summary>My merchant isn't listed. Can you add it?</summary>
+      <p>Ask. The launch list is the five biggest by trade volume; after that the order is set by what people request. Regional and specialist suppliers are wanted — those are usually where the widest spreads hide.</p></details>
+    <details><summary>When does it launch?</summary>
+      <p>Early access opens first, at the launch price locked for the first year. Put your email in and you'll get one message when it's live — no drip sequence, no newsletter.</p></details>
+  </div>
+</div></section>
+
+<section class="final"><div class="wrap reveal">
+  <div class="eyebrow" id="early">Early access</div>
+  <h2>Stop ringing around. <em>Start knowing.</em></h2>
+  <p class="lede" style="margin:16px auto 0">One email when it launches. Launch price locked for a year. That's the whole offer.</p>
+  <form class="signup" onsubmit="event.preventDefault();this.querySelector('input').value='';this.querySelector('.btn').textContent='On the list ✓'">
+    <input type="email" placeholder="you@yourtrade.com.au" required aria-label="Email address" />
+    <button class="btn primary" type="submit">Get early access</button>
+  </form>
+  <p class="disclaimer" style="margin:18px auto 0">Form is a demo — not wired to a backend yet.</p>
+</div></section>
+
+<footer><div class="wrap">
+  <div>Counter · Built in Australia</div>
+  <div>Independent · Not affiliated with any retailer</div>
+</div></footer>
+
+<script>
+const PRODUCTS = [
+  { q:"makita impact driver 18v", label:"Makita DTD153Z 18V", unitLabel:"ea",
+    rows:[ {m:"Sydney Tools", c:"#F5A623", p:179.00}, {m:"Total Tools", c:"#E01E26", p:189.00},
+           {m:"Bunnings Trade", c:"#0D7B3E", p:199.00}, {m:"Blackwoods", c:"#2C6CB0", p:214.00} ] },
+  { q:"sikaflex 11fc 300ml", label:"Sikaflex-11FC 300ml", unitLabel:"per 100ml",
+    rows:[ {m:"Bunnings Trade", c:"#0D7B3E", p:14.90, u:4.97}, {m:"Blackwoods", c:"#2C6CB0", p:15.20, u:5.07},
+           {m:"Total Tools", c:"#E01E26", p:16.50, u:5.50}, {m:"Reece", c:"#00539B", p:17.40, u:5.80} ] },
+  { q:"100mm grinding disc 10pk", label:"100mm Grinding Disc 10pk", unitLabel:"per disc",
+    rows:[ {m:"Total Tools", c:"#E01E26", p:19.95, u:2.00}, {m:"Sydney Tools", c:"#F5A623", p:21.00, u:2.10},
+           {m:"Bunnings Trade", c:"#0D7B3E", p:22.98, u:2.30}, {m:"Blackwoods", c:"#2C6CB0", p:24.60, u:2.46} ] },
+  { q:"copper pipe 15mm x 3m", label:"Copper Pipe 15mm × 3m", unitLabel:"per m",
+    rows:[ {m:"Reece", c:"#00539B", p:42.10, u:14.03}, {m:"Bunnings Trade", c:"#0D7B3E", p:46.90, u:15.63},
+           {m:"Blackwoods", c:"#2C6CB0", p:49.20, u:16.40}, {m:"Total Tools", c:"#E01E26", p:null} ] }
+];
+
+const money = n => "$" + n.toFixed(2);
+const chips = document.getElementById("chips");
+const rowsEl = document.getElementById("rows");
+const queryEl = document.getElementById("query");
+const saveEl = document.getElementById("saveline");
+
+function render(i){
+  const prod = PRODUCTS[i];
+  queryEl.textContent = prod.q;
+
+  [...chips.children].forEach((c, n) => c.setAttribute("aria-selected", n === i));
+
+  const priced = prod.rows.filter(r => r.p !== null);
+  const best = Math.min(...priced.map(r => r.p));
+  const worst = Math.max(...priced.map(r => r.p));
+
+  rowsEl.innerHTML = prod.rows.map(r => {
+    if (r.p === null) return `<tr>
+      <td><div class="merch"><span class="swatch" style="background:${r.c};opacity:.4"></span>${r.m}</div></td>
+      <td class="r"><span class="nostock">Not stocked</span></td><td class="r">—</td><td class="r">—</td></tr>`;
+    const isBest = r.p === best;
+    const diff = r.p - best;
+    return `<tr class="${isBest ? "best" : ""}">
+      <td><div class="merch"><span class="swatch" style="background:${r.c}"></span>${r.m}
+        ${isBest ? '<span class="tag">Cheapest</span>' : ""}</div></td>
+      <td class="r"><span class="price">${money(r.p)}</span></td>
+      <td class="r"><span class="unit">${r.u ? money(r.u) + " " + prod.unitLabel : prod.unitLabel}</span></td>
+      <td class="r"><span class="delta ${isBest ? "zero" : ""}">${isBest ? "best price" : "+" + money(diff)}</span></td>
+    </tr>`;
+  }).join("");
+
+  saveEl.textContent = `${money(best)} — save ${money(worst - best)}`;
+}
+
+PRODUCTS.forEach((p, i) => {
+  const b = document.createElement("button");
+  b.className = "chip";
+  b.type = "button";
+  b.setAttribute("role", "tab");
+  b.textContent = p.label;
+  b.onclick = () => render(i);
+  chips.appendChild(b);
+});
+render(0);
+
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+}), { threshold: .12 });
+document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+</script>
+</body>
+</html>
